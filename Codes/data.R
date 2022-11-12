@@ -1,11 +1,12 @@
 library("rjson")
-library(dplyr)
 library(tidytext)
 library(tidyr)
 library("tm")
 library("SnowballC")
 library("wordcloud")
 library(ggplot2)
+library(tidyverse)
+library(scales)
 
 # read the original json data in as dataframes
 business <- jsonlite::stream_in(file("business.json"),pagesize = 1000)
@@ -45,7 +46,7 @@ flavor = c('banana', 'bubblegum', 'butter', 'butterscotch', 'pecan', 'chocolate'
 flavor_words = word_freq %>% 
   filter(word %in% flavor) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
-freq_flavors = as.matrix(colSums(flavor_words[, -1]))
+freq_flavors = as.matrix(colSums(flavor_words[, -c(1:5)]))
 names(freq_flavors) = flavor
 sort(freq_flavors, decreasing = TRUE)
 
@@ -53,18 +54,19 @@ type = c('cone', 'sundae', 'shakes', 'shake', 'smoothie', 'slush', 'waffle', 'sh
 type_words = word_freq %>% 
   filter(word %in% type) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
-freq_types = as.matrix(colSums(type_words[, -1]))
+freq_types = as.matrix(colSums(type_words[, -c(1:5)]))
 names(freq_types) = type
 
 dev.new(width = 1000, height = 1000, unit = "px")
 wordcloud(rownames(freq_flavors), 
-          freq_flavors, min.freq =3, scale=c(5, .2),
+          freq_flavors, min.freq =3, scale=c(10, .5),
           random.order = FALSE,
           random.color = TRUE)
 
 flavors = word_freq %>% filter(word %in% flavor)
 dev.new(width = 1000, height = 1000, unit = "px")
-flavors %>% ggplot(aes(x=stars,color=word,fill=word)) + geom_histogram(aes(y = ..count../sum(..count..))) + theme(
+flavors %>% ggplot(aes(x=stars,color=word,fill=word)) + geom_histogram(aes(y = stat(density) * 0.5), binwidth = 0.5) + 
+  scale_y_continuous(labels = percent) + theme(
                         legend.position="none",
                         panel.spacing = unit(0.1, "lines"),
                         strip.text.x = element_text(size = 8)
@@ -72,6 +74,11 @@ flavors %>% ggplot(aes(x=stars,color=word,fill=word)) + geom_histogram(aes(y = .
                       ylab("Proportion ") +
                       facet_wrap(~word)
 
+
+wordcloud(rownames(freq_types), 
+          freq_types, min.freq =3, scale=c(10, .5),
+          random.order = FALSE,
+          random.color = TRUE)
 types = word_freq %>% filter(word %in% type)
 dev.new(width = 1000, height = 1000, unit = "px")
 types%>%ggplot(aes(x=stars,color=word,fill=word))+geom_histogram(aes(y = ..density../sum(..density..))) + theme(
@@ -81,11 +88,13 @@ types%>%ggplot(aes(x=stars,color=word,fill=word))+geom_histogram(aes(y = ..densi
                       ) +xlab("") +
                       ylab("Proportion ") +
                       facet_wrap(~word)
-types%>%ggplot(aes(x=stars,color=word,fill=word))+geom_histogram(aes(y = ..density..)) + theme(
+types %>% ggplot(aes(x=stars,color=word,fill=word))+geom_histogram(aes(y = stat(density) * 0.5), binwidth = 0.5) + 
+  scale_y_continuous(labels = percent) + 
+  theme(
   legend.position="none",
   panel.spacing = unit(0.1, "lines"),
   strip.text.x = element_text(size = 8)
-) +xlab("") +
+) + xlab("") +
   ylab("Proportion ") +
   facet_wrap(~word)
 
