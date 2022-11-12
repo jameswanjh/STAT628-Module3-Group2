@@ -37,7 +37,7 @@ flavor = c('banana', 'bubblegum', 'butter', 'butterscotch', 'pecan', 'chocolate'
            'sugar', 'chili', 'chilli', 'cranberry', 'cucumber', 'hazelnut', 'kiwi',
            'honey', 'lavendar', 'lemon', 'lime', 'lychee', 'mocha', 'oreo', 'passionfruit',
            'peach', 'peppermint', 'plum', 'toffee', 'sherbet', 'rose', 'pumpkin',
-           'pear', 'pineapple', 'salt', 'custard', 'almond', 'yogurt')
+           'pear', 'pineapple', 'salt', 'almond', 'yogurt')
 flavor_words = freq_words %>% 
   filter(word %in% flavor) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
