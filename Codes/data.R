@@ -2,6 +2,9 @@ library("rjson")
 library(dplyr)
 library(tidytext)
 library(tidyr)
+library("tm")
+library("SnowballC")
+library("wordcloud")
 
 # read the original json data in as dataframes
 business <- jsonlite::stream_in(file("business.json"),pagesize = 1000)
@@ -41,6 +44,12 @@ flavor = c('banana', 'bubblegum', 'butter', 'butterscotch', 'pecan', 'chocolate'
 flavor_words = freq_words %>% 
   filter(word %in% flavor) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
-freq_flavors = colSums(flavor_words[, -1])
+freq_flavors = as.matrix(colSums(flavor_words[, -1]))
 names(freq_flavors) = flavor
 sort(freq_flavors, decreasing = TRUE)
+
+dev.new(width = 1000, height = 1000, unit = "px")
+wordcloud(rownames(freq_flavors), 
+          freq_flavors, min.freq =3, scale=c(5, .2),
+          random.order = FALSE,
+          random.color = TRUE)
