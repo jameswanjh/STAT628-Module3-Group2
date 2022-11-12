@@ -5,6 +5,7 @@ library(tidyr)
 library("tm")
 library("SnowballC")
 library("wordcloud")
+library(ggplot2)
 
 # read the original json data in as dataframes
 business <- jsonlite::stream_in(file("business.json"),pagesize = 1000)
@@ -20,17 +21,17 @@ write.csv(icecream_review, "icecream_review.csv")
 
 
 review = read.csv("Data/icecream_review.csv")
-text = tibble(line = 1:151330, text = review$text)
+text = tibble(line = 1:151330, text = review$text, stars = review$stars, useful = review$useful, funny = review$funny, cool = review$cool)
 words = text %>%
   unnest_tokens(word, text)
 data(stop_words)
 words <- words %>%
   anti_join(stop_words)
-freq_words = words %>%
-  count(line, word)
-colnames(freq_words)[1] = "review"
-colnames(freq_words)[3] = "count"
-freq_words %>% pivot_wider(names_from = word, values_from = count, values_fill = 0)
+word_freq = words %>%
+  count(line, stars, useful, funny, cool, word)
+colnames(word_freq)[1] = "review"
+colnames(word_freq)[7] = "count"
+
 flavor = c('banana', 'bubblegum', 'butter', 'butterscotch', 'pecan', 'chocolate', 
            'cheese', 'cake', 'cherry', 'cookie', 'coffee', 'cinnamon', 'apple', 
            'candy', 'vanilla', 'eggnog', 'grape', 'tea', 'lucuma', 'mamey', 'mango',
@@ -41,15 +42,51 @@ flavor = c('banana', 'bubblegum', 'butter', 'butterscotch', 'pecan', 'chocolate'
            'honey', 'lavendar', 'lemon', 'lime', 'lychee', 'mocha', 'oreo', 'passionfruit',
            'peach', 'peppermint', 'plum', 'toffee', 'sherbet', 'rose', 'pumpkin',
            'pear', 'pineapple', 'salt', 'almond', 'yogurt')
-flavor_words = freq_words %>% 
+flavor_words = word_freq %>% 
   filter(word %in% flavor) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
 freq_flavors = as.matrix(colSums(flavor_words[, -1]))
 names(freq_flavors) = flavor
 sort(freq_flavors, decreasing = TRUE)
 
+type = c('cone', 'sundae', 'shakes', 'shake', 'smoothie', 'slush', 'waffle', 'sherbet', 'sorbet', 'yogurt', 'gelato')
+type_words = word_freq %>% 
+  filter(word %in% type) %>% 
+  pivot_wider(names_from=word,values_from=count, values_fill = 0)
+freq_types = as.matrix(colSums(type_words[, -1]))
+names(freq_types) = type
+
 dev.new(width = 1000, height = 1000, unit = "px")
 wordcloud(rownames(freq_flavors), 
           freq_flavors, min.freq =3, scale=c(5, .2),
           random.order = FALSE,
           random.color = TRUE)
+
+flavors = word_freq %>% filter(word %in% flavor)
+dev.new(width = 1000, height = 1000, unit = "px")
+flavors %>% ggplot(aes(x=stars,color=word,fill=word)) + geom_histogram(aes(y = ..count../sum(..count..))) + theme(
+                        legend.position="none",
+                        panel.spacing = unit(0.1, "lines"),
+                        strip.text.x = element_text(size = 8)
+                      ) + xlab("") +
+                      ylab("Proportion ") +
+                      facet_wrap(~word)
+
+types = word_freq %>% filter(word %in% type)
+dev.new(width = 1000, height = 1000, unit = "px")
+types%>%ggplot(aes(x=stars,color=word,fill=word))+geom_histogram(aes(y = ..density../sum(..density..))) + theme(
+                        legend.position="none",
+                        panel.spacing = unit(0.1, "lines"),
+                        strip.text.x = element_text(size = 8)
+                      ) +xlab("") +
+                      ylab("Proportion ") +
+                      facet_wrap(~word)
+types%>%ggplot(aes(x=stars,color=word,fill=word))+geom_histogram(aes(y = ..density..)) + theme(
+  legend.position="none",
+  panel.spacing = unit(0.1, "lines"),
+  strip.text.x = element_text(size = 8)
+) +xlab("") +
+  ylab("Proportion ") +
+  facet_wrap(~word)
+
+review%>%ggplot(aes(x=stars))+geom_histogram(aes(y = ..count../sum(..count..)))
