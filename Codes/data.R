@@ -9,16 +9,16 @@ library(tidyverse)
 library(scales)
 
 # read the original json data in as dataframes
-business <- jsonlite::stream_in(file("business.json"),pagesize = 1000)
-review <- jsonlite::stream_in(file("review.json"),pagesize = 10000)
+#business <- jsonlite::stream_in(file("business.json"),pagesize = 1000)
+#review <- jsonlite::stream_in(file("review.json"),pagesize = 10000)
 
 # select only "ice cream" category
-icecream = business[grepl('Ice Cream', business$categories), ]
-write.csv(icecream, "icecream.csv")
+#icecream = business[grepl('Ice Cream', business$categories), ]
+#write.csv(icecream, "icecream.csv")
 
 # select reviews of ice-cream business
-icecream_review=review%>%filter(business_id%in% icecream$business_id)
-write.csv(icecream_review, "icecream_review.csv")
+#icecream_review=review%>%filter(business_id%in% icecream$business_id)
+#write.csv(icecream_review, "icecream_review.csv")
 
 
 
@@ -59,18 +59,23 @@ type = c('cone', 'sundae', 'shakes', 'shake', 'smoothie', 'slush', 'waffle', 'sh
 flavor_words = word_freq %>% 
   filter(word %in% flavor) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
+#write.csv(flavor_words,"flavor_word_freq_per_review.csv")
 type_words = word_freq %>% 
   filter(word %in% type) %>% 
   pivot_wider(names_from=word,values_from=count, values_fill = 0)
+#write.csv(type_words,"type_word_freq_per_review.csv")
+
 
 # count and sort the total word appearances related to each flavor & type in all reviews as a whole
 flavors_total = as.matrix(sort(colSums(flavor_words[, -c(1:5)]), decreasing = TRUE))
 names(flavors_total) = flavor
 colnames(flavors_total)[1] = "total"
+#write.csv(flavors_total,"total_flavor_word_freq.csv")
 
 types_total = as.matrix(sort(colSums(type_words[, -c(1:5)]), decreasing = TRUE))
 names(types_total) = type
 colnames(types_total)[1] = "total"
+#write.csv(types_total,"total_type_word_freq.csv")
 
 
 # visualize the comparison of word appearances related to each flavor & type using wordcloud
