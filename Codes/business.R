@@ -25,40 +25,7 @@ business2=business1%>%
          attributes.BusinessParking=(attributes.BusinessParking%in%c("{'garage': True",
                                                                      "{u'valet': True")))
          #attributes.GoodForKids=(attributes.GoodForKids==TRUE))
-
-
-## try to fit a linear model
-lm1=lm(stars~attributes.BikeParking+
-         attributes.BusinessAcceptsCreditCards+
-         attributes.RestaurantsTakeOut+
-         attributes.WheelchairAccessible+
-         attributes.OutdoorSeating+
-         attributes.HasTV,
-       business2)
-summary(lm1)
-
-aov1=aov(stars~attributes.BikeParking+
-           attributes.BusinessAcceptsCreditCards+
-           attributes.RestaurantsTakeOut+
-           attributes.WheelchairAccessible+
-           attributes.OutdoorSeating+
-           attributes.HasTV,
-         business2)
-summary(aov1)
-
-
-aov2=aov(stars~attributes.BikeParking+attributes.BusinessAcceptsCreditCards+
-           attributes.OutdoorSeating,business2)
-summary(aov2)
-
-lm2=lm(stars~attributes.BikeParking+attributes.BusinessAcceptsCreditCards+
-         attributes.OutdoorSeating,business2)
-summary(lm2)
-plot(lm2)
-
-lm3=polr(as.factor(stars)~attributes.BikeParking+attributes.BusinessAcceptsCreditCards+
-           attributes.OutdoorSeating,business2)
-summary(lm3)
+business2=business2%>%mutate(zscore=(stars-mean(stars))/sd(stars))
 
 ## EDA
 ### BikeParking
@@ -108,9 +75,17 @@ business2%>%
   scale_fill_discrete(name ="WheelchairAccessible",label=c('FALSE'='No','TRUE'='Yes'))+
   theme_classic()
 
+## ANOVA
+aov1=aov(zscore~attributes.BikeParking+
+           attributes.RestaurantsTakeOut+
+           attributes.BusinessParking,business2)
+summary(aov1)
 
 
-## Decision Tree
+
+
+
+## Decision Tree, we tried it but the model did not perform well
 library(rpart)
 library(rpart.plot)
 set.seed(1234)
