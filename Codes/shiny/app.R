@@ -158,11 +158,17 @@ ui <- fluidPage(
                                        "Result",
                                        br(),
                                        "The estimated star rating of your new ice-cream business will be:",
+                                       br(),
+                                       br(),
                                        textOutput("prospective_estimation"),
+                                       
                                        br(),
                                        hr(),
                                    ),
-                                   
+                                   tags$head(tags$style("#prospective_estimation{color: #eab676;
+                                 font-size: 20px;
+                                 font-style: italic;
+                                 }")),
                                    tabPanel(
                                        "Suggestions",
                                        br(),
@@ -400,7 +406,7 @@ server <- function(input, output) {
     output$plot = renderPlot({
         req(is.numeric(input$current_star))
         data = c(input$current_star, current_simulate())
-        plot = barplot(data, names.arg = c("Current", "Simulated"), ylab = "Star rating", ylim = c(0,6))
+        plot = barplot(data, names.arg = c("Current", "Simulated"), ylab = "Star rating", ylim = c(0,6), col = c("#abdbe3", "#eab676"), border = F)
         text(plot, data + 0.4, data, cex = 1)
     })
     
