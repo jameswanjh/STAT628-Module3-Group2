@@ -25,17 +25,18 @@ ui <- fluidPage(
     ),
     br(),
     
+    # Identify users' role
     "Please identify you are already an ice-cream business owner or a prospective ice-cream business owner?",
     
     navbarPage(
         "Please choose:",
         
+        # Option 1: Already an ice-cream business owner
         tabPanel("I'm already an ice-cream business owner",
                  
                  sidebarLayout(
                      # Prompts for users' input
                      sidebarPanel(
-                         
                          
                          "Please help us learn more about your current business ∩ˍ∩",
                          
@@ -46,7 +47,7 @@ ui <- fluidPage(
                              inputId = "current_star",
                              label = "What is your current star rating?",
                              value = NULL,
-                             min = 0,
+                             min = 1,
                              max = 5,
                              step = 0.1
                          ),
@@ -78,6 +79,7 @@ ui <- fluidPage(
                                tabsetPanel(
                                    type = "pills",
                                    
+                                   # Summary
                                    tabPanel(
                                        "Summary",
                                        br(),
@@ -87,10 +89,9 @@ ui <- fluidPage(
                                        tableOutput("effects"),
                                        br(),
                                        hr(),
-                                       br(),
-                                       verbatimTextOutput("inference")
                                    ),
                                    
+                                   # Simulator
                                    tabPanel(
                                        "Simulator",
                                        br(),
@@ -117,9 +118,9 @@ ui <- fluidPage(
                                ),)
                  ), ),
         
-        
-        
+        # Option 1: A prospective ice-cream business owner
         tabPanel(" I wanna start up an ice-cream business",
+                 
                  sidebarLayout(
                      # Prompts for users' input
                      sidebarPanel(
@@ -178,8 +179,6 @@ ui <- fluidPage(
                  ), )
     ),
     
-    # Sidebar for users to input their information
-    
     br(),
     
     fluidRow(column(12,
@@ -212,7 +211,7 @@ server <- function(input, output) {
     current_iv = InputValidator$new()
     current_iv$add_rule("current_star", sv_required())
     current_iv$add_rule("current_star", sv_numeric())
-    current_iv$add_rule("current_star", sv_between(0, 5))
+    current_iv$add_rule("current_star", sv_between(1, 5))
     current_iv$add_rule("current_types", sv_required())
     current_iv$add_rule("current_bike", sv_required())
     
@@ -320,6 +319,7 @@ server <- function(input, output) {
         effects
     })
     
+    # Effects table
     output$table_description = renderText({
         req(is.vector(current_effects()))
         "The table below shows some factors that may have positive or negative effects on your ice-cream business:"
@@ -330,6 +330,7 @@ server <- function(input, output) {
                    Negative = c(current_effects()[2], current_effects()[5], current_effects()[7], ""))
     }, align = "c")
     
+    # Click the button to simulate star rating for new menu
     current_simulate = eventReactive(input$simulate, {
         current_iv$enable()
         simulate_iv$enable()
@@ -403,6 +404,7 @@ server <- function(input, output) {
         result
     })
     
+    # Simulator's bar plot
     output$plot = renderPlot({
         req(is.numeric(input$current_star))
         data = c(input$current_star, current_simulate())

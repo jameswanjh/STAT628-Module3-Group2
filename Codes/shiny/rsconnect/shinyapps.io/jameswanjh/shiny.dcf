@@ -1,0 +1,14 @@
+name: shiny
+title: shiny
+username:
+account: jameswanjh
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7887750
+bundleId: 6634221
+url: https://jameswanjh.shinyapps.io/shiny/
+when: 1670982880.8902
+lastSyncTime: 1670982880.89021
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData
