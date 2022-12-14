@@ -16,7 +16,7 @@ Do research and analysis on a real data set to give adviec to ice cream business
     1. Business.R: this file contains all the codes we wrote to do analysis and modeling.
     2. data.R: this file contains all the codes we wrote to do data cleaning for anova.
     3. review.R: this file contains all the codes we wrote to do data cleaning from review.
-    2. shiny: this directory contains the shiny web app codes (app.R) and the cleaned data file we would use in this app. This app is developed to design a ratings calculator based on our analysis and model. Users can easily use it by inputting some information about them. You can download it and run it in RStudio. Or, we have already deployed it to shinyapps.io, so you can access it using the following link https://jameswanjh.shinyapps.io/bodyfat/ in your browser for convienience.
+    2. shiny: this directory contains the shiny web app codes (app.R) and the cleaned data file we would use in this app. This app is developed to design a ratings calculator based on our analysis and model. Users can easily use it by inputting some information about them. You can download it and run it in RStudio. Or, we have already deployed it to shinyapps.io, so you can access it using the following link https://jameswanjh.shinyapps.io/shiny/ in your browser for convienience.
 
 ### Usage
 
